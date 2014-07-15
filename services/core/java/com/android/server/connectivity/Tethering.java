@@ -773,7 +773,7 @@ public class Tethering extends BaseNetworkObserver {
                         ConnectivityManager.EXTRA_NETWORK_INFO);
                 if (networkInfo != null &&
                         networkInfo.getDetailedState() != NetworkInfo.DetailedState.FAILED) {
-                    if (VDBG) Log.d(TAG, "Tethering got CONNECTIVITY_ACTION_IMMEDIATE");
+                    if (VDBG) Log.d(TAG, "Tethering got CONNECTIVITY_ACTION");
                     mTetherMasterSM.sendMessage(TetherMasterSM.CMD_UPSTREAM_CHANGED, networkInfo);
                 }
             } else if (action.equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
@@ -1558,10 +1558,6 @@ public class Tethering extends BaseNetworkObserver {
                 Log.d(TAG, "adding v6 interface " + iface);
                 try {
                     service.addUpstreamV6Interface(iface);
-                    for (TetherInterfaceSM sm : mNotifyList) {
-                        sendUpstreamIfaceChangeBroadcast( iface, sm.getTethered(), AF_INET6,
-                                UpstreamInfoUpdateType.UPSTREAM_IFACE_ADDED);
-                    }
                 } catch (RemoteException e) {
                     Log.e(TAG, "Unable to append v6 upstream interface");
                 }
@@ -1574,10 +1570,6 @@ public class Tethering extends BaseNetworkObserver {
                 Log.d(TAG, "removing v6 interface " + iface);
                 try {
                     service.removeUpstreamV6Interface(iface);
-                    for (TetherInterfaceSM sm : mNotifyList) {
-                        sendUpstreamIfaceChangeBroadcast( iface, sm.getTethered(), AF_INET6,
-                                UpstreamInfoUpdateType.UPSTREAM_IFACE_REMOVED);
-                    }
                 } catch (RemoteException e) {
                     Log.e(TAG, "Unable to remove v6 upstream interface");
                 }
