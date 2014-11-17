@@ -1166,9 +1166,6 @@
   <java-symbol type="drawable" name="ic_audio_notification" />
   <java-symbol type="drawable" name="ic_audio_notification_mute" />
   <java-symbol type="drawable" name="ic_audio_phone" />
-  <java-symbol type="drawable" name="ic_audio_ring_notif" />
-  <java-symbol type="drawable" name="ic_audio_ring_notif_mute" />
-  <java-symbol type="drawable" name="ic_audio_ring_notif_vibrate" />
   <java-symbol type="drawable" name="ic_audio_vol" />
   <java-symbol type="drawable" name="ic_audio_vol_mute" />
   <java-symbol type="drawable" name="ic_bullet_key_permission" />
@@ -1464,7 +1461,6 @@
   <java-symbol type="drawable" name="ic_jog_dial_unlock" />
   <java-symbol type="drawable" name="ic_jog_dial_vibrate_on" />
   <java-symbol type="drawable" name="ic_lock_airplane_mode" />
-  <java-symbol type="drawable" name="ic_lock_airplane_mode_off" />
   <java-symbol type="drawable" name="ic_menu_cc" />
   <java-symbol type="drawable" name="jog_tab_bar_left_unlock" />
   <java-symbol type="drawable" name="jog_tab_bar_right_sound_off" />
