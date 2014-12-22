@@ -149,6 +149,16 @@ public final class RemoteConnection {
         public void onVideoStateChanged(RemoteConnection connection, int videoState) {}
 
         /**
+         * Indicates that the call substate of this {@code RemoteConnection} has changed.
+         * See {@link #getCallSubstate()}.
+         *
+         * @param connection The {@code RemoteConnection} invoking this method.
+         * @param callSubstate The new call substate of the {@code RemoteConnection}.
+         * @hide
+         */
+        public void onCallSubstateChanged(RemoteConnection connection, int callSubstate) {}
+
+        /**
          * Indicates that this {@code RemoteConnection} has been destroyed. No further requests
          * should be made to the {@code RemoteConnection}, and references to it should be cleared.
          *
@@ -216,7 +226,7 @@ public final class RemoteConnection {
 
             public void onPeerDimensionsChanged(VideoProvider videoProvider, int width, int height) {}
 
-            public void onCallDataUsageChanged(VideoProvider videoProvider, int dataUsage) {}
+            public void onCallDataUsageChanged(VideoProvider videoProvider, long dataUsage) {}
 
             public void onCameraCapabilitiesChanged(
                     VideoProvider videoProvider,
@@ -260,7 +270,7 @@ public final class RemoteConnection {
             }
 
             @Override
-            public void changeCallDataUsage(int dataUsage) {
+            public void changeCallDataUsage(long dataUsage) {
                 for (Listener l : mListeners) {
                     l.onCallDataUsageChanged(VideoProvider.this, dataUsage);
                 }
@@ -405,6 +415,7 @@ public final class RemoteConnection {
     private boolean mConnected;
     private int mCallCapabilities;
     private int mVideoState;
+    private int mCallSubstate;
     private VideoProvider mVideoProvider;
     private boolean mIsVoipAudioMode;
     private StatusHints mStatusHints;
@@ -428,6 +439,29 @@ public final class RemoteConnection {
     }
 
     /**
+     * @hide
+     */
+    RemoteConnection(String callId, IConnectionService connectionService,
+            ParcelableConnection connection) {
+        mConnectionId = callId;
+        mConnectionService = connectionService;
+        mConnected = true;
+        mState = connection.getState();
+        mDisconnectCause = connection.getDisconnectCause();
+        mRingbackRequested = connection.isRingbackRequested();
+        mCallCapabilities = connection.getCapabilities();
+        mVideoState = connection.getVideoState();
+        mVideoProvider = new RemoteConnection.VideoProvider(connection.getVideoProvider());
+        mIsVoipAudioMode = connection.getIsVoipAudioMode();
+        mStatusHints = connection.getStatusHints();
+        mAddress = connection.getHandle();
+        mAddressPresentation = connection.getHandlePresentation();
+        mCallerDisplayName = connection.getCallerDisplayName();
+        mCallerDisplayNamePresentation = connection.getCallerDisplayNamePresentation();
+        mConference = null;
+    }
+
+    /**
      * Create a RemoteConnection which is used for failed connections. Note that using it for any
      * "real" purpose will almost certainly fail. Callers should note the failure and act
      * accordingly (moving on to another RemoteConnection, for example)
@@ -436,7 +470,7 @@ public final class RemoteConnection {
      * @hide
      */
     RemoteConnection(DisconnectCause disconnectCause) {
-        this("NULL", null, null);
+        mConnectionId = "NULL";
         mConnected = false;
         mState = Connection.STATE_DISCONNECTED;
         mDisconnectCause = disconnectCause;
@@ -541,6 +575,14 @@ public final class RemoteConnection {
      */
     public int getVideoState() {
         return mVideoState;
+    }
+
+    /**
+     * @return The call substate of the {@code RemoteConnection}. See
+     * @hide
+     */
+    public int getCallSubstate() {
+        return mCallSubstate;
     }
 
     /**
@@ -847,6 +889,16 @@ public final class RemoteConnection {
         mVideoState = videoState;
         for (Callback c : mCallbacks) {
             c.onVideoStateChanged(this, videoState);
+        }
+    }
+
+    /**
+     * @hide
+     */
+    void setCallSubstate(int callSubstate) {
+        mCallSubstate = callSubstate;
+        for (Callback c : mCallbacks) {
+            c.onCallSubstateChanged(this, callSubstate);
         }
     }
 
